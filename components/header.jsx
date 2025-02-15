@@ -1,3 +1,4 @@
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -17,7 +18,12 @@ const Header = () => {
             </Link>
 
             <div className='flex items-center gap-4'>
-                Other buttons
+            <SignedOut>
+                <SignInButton />
+            </SignedOut>
+            <SignedIn>
+                <UserButton/>
+            </SignedIn>
             </div>
         </nav>
     </header>
