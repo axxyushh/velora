@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import "./globals.css";
 import { Inter } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs";
+import Footer from "@/components/footer";
 
 const inter = Inter({subsets:["latin"]});
 
@@ -25,13 +26,7 @@ export default function RootLayout({ children }) {
             {children}
           </main>
 
-          <footer className="bg-green-300 py-12 bg-opacity-10">
-            <div className="mx-auto px-4 text-center text-gray-900">
-              <p>
-                Made by Ayush Srivastava
-              </p>
-            </div>
-          </footer>
+          <Footer/>
           
         </body>
       </html>
