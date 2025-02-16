@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart2, Book, Calendar, ChevronRight, FileText, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import faqs from "@/data/faqs";
+import { getDailyPrompt } from "@/actions/public";
 
 const features = [
   {
@@ -28,8 +29,9 @@ const features = [
   },
 ];
 
-export default function Home() {
-  const hello = 1;
+export default async function Home() {
+  const advice = await getDailyPrompt();
+
   return (
     <div className="relative container mx-auto px-4 pt-16 pb-16">
       <div className="max-w-5xl mx-auto text-center space-y-8">
@@ -57,7 +59,7 @@ export default function Home() {
             </div>
               <div className="space-y-4 p-4">
                 <h3 className="text-xl font-semibold text-green-900">
-                  Daily Prompts
+                  {advice ? advice : "My Thoughts today."}
                 </h3>
                 <Skeleton className="h-4 bg-green-100 rounded w-3/4" />
                 <Skeleton className="h-4 bg-green-100 rounded w-full" />
