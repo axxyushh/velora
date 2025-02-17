@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs";
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
 
 const inter = Inter({subsets:["latin"]});
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
           <main className="min-h-screen">
             {children}
           </main>
+          <Toaster richColors/>
 
           <Footer/>
           

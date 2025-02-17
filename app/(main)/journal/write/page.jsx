@@ -11,9 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { object } from "zod";
 import { getMoodById, MOODS } from "@/app/lib/moods";
 import { Button } from "@/components/ui/button";
+import useFetch from "@/hooks/use-fetch";
+import { createJournalEntry } from "@/actions/journal";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 const JournalEntryPage = () => {
+
+  const {
+     loading: actionLoading,
+     fn: actionFn,
+     data: actionResult,
+  } = useFetch(createJournalEntry);
+
+  const router = useRouter();
 
   const {register, handleSubmit, control, formState:{errors}, getValues} = useForm({
     resolver: zodResolver(journalSchema),
@@ -25,7 +38,15 @@ const JournalEntryPage = () => {
     },
   });
 
-  const isLoading = false;
+  const isLoading = actionLoading;
+
+  useEffect(() => {
+    if(actionResult && !actionLoading){
+      router.push(`/collections/${actionResult.collectionId?actionResult.collectionId:"unorganized"}`);
+      toast.success(`Entry created Successfully`);
+    }
+  }, [actionResult, actionLoading]);
+  
 
   const onSubmit = handleSubmit(async (data) => {
     const mood = getMoodById(data.mood);
@@ -33,7 +54,7 @@ const JournalEntryPage = () => {
       ...data,
       moodScore: mood.score,
       moodQuery: mood.pixabayQuery,
-      ...(isEditMode && { id: editId }),
+      // ...(isEditMode && { id: editId }),
     });
   });
   
