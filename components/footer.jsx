@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="mx-auto px-4 text-center text-gray-900">
         <p className="text-sm">© {new Date().getFullYear()} Velora. All rights reserved.</p>
         <p className="mt-1 text-sm">Made by Ayush Srivastava</p>
-        <div className="mt-3 flex justify-center space-x-4">
+        <div className="mt-3 flex justify-center space-x-4 animate-bounce">
           <Link href="https://www.instagram.com/axxyushh/#" target="_blank" rel="noopener noreferrer">
             <Instagram className="w-5 h-5 text-gray-900 hover:text-gray-700 transition" />
           </Link>
