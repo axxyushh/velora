@@ -8,7 +8,6 @@ import { journalSchema } from "@/app/lib/schema";
 import { BarLoader } from "react-spinners";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { object } from "zod";
 import { getMoodById, MOODS } from "@/app/lib/moods";
 import { Button } from "@/components/ui/button";
 import useFetch from "@/hooks/use-fetch";
@@ -17,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { createCollection, getCollections } from "@/actions/collection";
+import CollectionForm from "@/components/collection-form";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 const JournalEntryPage = () => {
@@ -44,7 +44,7 @@ const JournalEntryPage = () => {
 
   const router = useRouter();
 
-  const {register, handleSubmit, control, formState:{errors}, getValues} = useForm({
+  const {register, handleSubmit, control, formState:{errors}, getValues, setValue} = useForm({
     resolver: zodResolver(journalSchema),
     defaultValues:{
       title: "",
@@ -54,41 +54,51 @@ const JournalEntryPage = () => {
     },
   });
 
-  const isLoading = actionLoading;
-
+  
   useEffect(() => {
     fetchCollections();
     // if (editId) {
-    //   setIsEditMode(true);
-    //   fetchEntry(editId);
-    // } else {
-    //   setIsEditMode(false);
-    //   fetchDraft();
-    // }
-  }, []);
+      //   setIsEditMode(true);
+      //   fetchEntry(editId);
+      // } else {
+        //   setIsEditMode(false);
+        //   fetchDraft();
+        // }
+      }, []);
+      
+      useEffect(() => {
+        if(actionResult && !actionLoading){
+          router.push(`/collections/${actionResult.collectionId?actionResult.collectionId:"unorganized"}`);
+          toast.success(`Entry created Successfully`);
+        }
+      }, [actionResult, actionLoading]);
+      
+      
+      const onSubmit = handleSubmit(async (data) => {
+        const mood = getMoodById(data.mood);
+        actionFn({
+          ...data,
+          moodScore: mood.score,
+          moodQuery: mood.pixabayQuery,
+          // ...(isEditMode && { id: editId }),
+        });
+      });
 
-  useEffect(() => {
-    if(actionResult && !actionLoading){
-      router.push(`/collections/${actionResult.collectionId?actionResult.collectionId:"unorganized"}`);
-      toast.success(`Entry created Successfully`);
-    }
-  }, [actionResult, actionLoading]);
-  
+      useEffect(() => {
+        if (createdCollection) {
+          setIsCollectionDialogOpen(false);
+          fetchCollections();
+          setValue("collectionId", createdCollection.id);
+          toast.success(`Collection ${createdCollection.name} created!`);
+        }
+      }, [createdCollection]);
+      
+      const handleCreateCollection = async(data) => {
+        createCollectionFn(data);
+      }
+      
+    const isLoading = actionLoading || collectionsLoading;
 
-  const onSubmit = handleSubmit(async (data) => {
-    const mood = getMoodById(data.mood);
-    actionFn({
-      ...data,
-      moodScore: mood.score,
-      moodQuery: mood.pixabayQuery,
-      // ...(isEditMode && { id: editId }),
-    });
-  });
-
-  const handleCreateCollection = async(data) => {
-    createCollectionFn(data);
-  }
-  
   return (
     <div className="py-8">
       <form className="space-y-2 mx-auto" onSubmit={onSubmit}>
@@ -229,7 +239,7 @@ const JournalEntryPage = () => {
 
 
         <div className="space-y-4 flex">
-          <Button type="submit" variant="journal">
+          <Button type="submit" variant="journal" disabled={actionLoading}>
             Publish
           </Button>
         </div>
