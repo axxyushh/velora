@@ -15,16 +15,32 @@ import useFetch from "@/hooks/use-fetch";
 import { createJournalEntry } from "@/actions/journal";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createCollection, getCollections } from "@/actions/collection";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 const JournalEntryPage = () => {
 
+  const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
+
+  // Hooks
   const {
      loading: actionLoading,
      fn: actionFn,
      data: actionResult,
   } = useFetch(createJournalEntry);
+
+  const {
+    loading: collectionsLoading,
+    data: collections,
+    fn: fetchCollections,
+  } = useFetch(getCollections);
+
+  const {
+    loading: createCollectionLoading,
+    fn: createCollectionFn,
+    data: createdCollection,
+  } = useFetch(createCollection);
 
   const router = useRouter();
 
@@ -39,6 +55,17 @@ const JournalEntryPage = () => {
   });
 
   const isLoading = actionLoading;
+
+  useEffect(() => {
+    fetchCollections();
+    // if (editId) {
+    //   setIsEditMode(true);
+    //   fetchEntry(editId);
+    // } else {
+    //   setIsEditMode(false);
+    //   fetchDraft();
+    // }
+  }, []);
 
   useEffect(() => {
     if(actionResult && !actionLoading){
@@ -57,6 +84,10 @@ const JournalEntryPage = () => {
       // ...(isEditMode && { id: editId }),
     });
   });
+
+  const handleCreateCollection = async(data) => {
+    createCollectionFn(data);
+  }
   
   return (
     <div className="py-8">
@@ -159,38 +190,38 @@ const JournalEntryPage = () => {
           <label className="text-sm font-medium">
             Add to Collection (Optional)
           </label>
-          {/* <Controller
+          <Controller
             name="collectionId"
             control={control}
-            // render={({ field }) => (
-            //   <Select
-            //     onValueChange={(value) => {
-            //       if (value === "new") {
-            //         setIsCollectionDialogOpen(true);
-            //       } else {
-            //         field.onChange(value);
-            //       }
-            //     }}
-            //     value={field.value}
-            //   >
-            //     <SelectTrigger>
-            //       <SelectValue placeholder="Choose a collection..." />
-            //     </SelectTrigger>
-            //     <SelectContent>
-            //       {collections?.map((collection) => (
-            //         <SelectItem key={collection.id} value={collection.id}>
-            //           {collection.name}
-            //         </SelectItem>
-            //       ))}
-            //       <SelectItem value="new">
-            //         <span className="text-orange-600">
-            //           + Create New Collection
-            //         </span>
-            //       </SelectItem>
-            //     </SelectContent>
-            //   </Select>
-            // )}
-          /> */}
+            render={({ field }) => (
+              <Select
+                onValueChange={(value) => {
+                  if (value === "new") {
+                    setIsCollectionDialogOpen(true);
+                  } else {
+                    field.onChange(value);
+                  }
+                }}
+                value={field.value}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a collection..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {collections?.map((collection) => (
+                    <SelectItem key={collection.id} value={collection.id}>
+                      {collection.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="new">
+                    <span className="text-green-600">
+                      + Create New Collection
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.collectionId && (
             <p className="text-red-500 text-sm">{errors.content.message}</p>
           )}
@@ -202,9 +233,15 @@ const JournalEntryPage = () => {
             Publish
           </Button>
         </div>
-
-
       </form>
+
+
+      <CollectionForm
+        loading={createCollectionLoading}
+        onSuccess={handleCreateCollection}
+        open={isCollectionDialogOpen}
+        setOpen={setIsCollectionDialogOpen}
+      />
     </div>
   )
 }
