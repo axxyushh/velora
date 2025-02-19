@@ -134,9 +134,9 @@ export default async function Home() {
                 <div className="h-8 w-8 rounded bg-green-100"/>
                 <div className="h-8 w-8 rounded bg-green-100"/>
               </div>
-              <div className={'h-4 bg-green-50 rounded w-3/4'}/>
+              <div className={'h-4 bg-green-100 rounded w-3/4 animate-pulse'}/>
               <div className={'h-4 bg-green-50 rounded w-full'}/>
-              <div className={'h-4 bg-green-50 rounded w-2/3'}/>
+              <div className={'h-4 bg-green-200 rounded w-2/3 animate-pulse'}/>
               <div className={'h-4 bg-green-50 rounded w-1/3'}/>
             </div>
           </div>
@@ -146,9 +146,9 @@ export default async function Home() {
             <div className="space-y-4 bg-white rounded-2xl shadow-xl p-6 border border-green-100">
                <div className="h-40 bg-gradient-to-t from-green-100 to-green-50 rounded-lg"/> 
                <div className="flex justify-between">
+                  <div className={'h-4 w-16 bg-green-300 rounded animate-bounce'}/>
                   <div className={'h-4 w-16 bg-green-100 rounded'}/>
-                  <div className={'h-4 w-16 bg-green-100 rounded'}/>
-                  <div className={'h-4 w-16 bg-green-100 rounded'}/>
+                  <div className={'h-4 w-16 bg-green-300 rounded animate-pulse'}/>
                   <div className={'h-4 w-16 bg-green-100 rounded'}/>
                </div>
               </div>

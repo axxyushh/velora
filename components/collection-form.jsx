@@ -81,7 +81,6 @@ const CollectionForm = ({
         </form>
       </DialogContent>
     </Dialog>
-
   )
 }
 
