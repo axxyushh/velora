@@ -1,8 +1,33 @@
+import { getCollections } from '@/actions/collection'
+import { getJournalEntries } from '@/actions/journal';
 import React from 'react'
+import Collections from './_components/collections';
 
-const DashboardPage = () => {
+const DashboardPage = async() => {
+
+  const collections = await getCollections();
+  const entiresData = await getJournalEntries();
+
+  const entriesByCollection = entiresData?.data.entries.reduce((acc, entry) => {
+    const collectionId = entry.collection || "uncategorized";
+    if (!acc[collectionId]) {
+      acc[collectionId] = [];
+    }
+    acc[collectionId].push(entry);
+    return acc;
+  },{});
   return (
-    <div>DashboardPage</div>
+    <div className='px-4 py-8 space-y-8'>
+      <section className='space-y-4'>
+        Mood Graph
+      </section>
+
+      <Collections
+        collections={collections}
+        entriesByCollection={entriesByCollection}
+      />
+
+    </div>
   )
 }
 
