@@ -1,34 +1,38 @@
-import { getCollections } from '@/actions/collection'
-import { getJournalEntries } from '@/actions/journal';
-import React from 'react'
-import Collections from './_components/collections';
+import { getCollections } from "@/actions/collection";
+import { getJournalEntries } from "@/actions/journal";
+import MoodAnalytics from "./_components/mood-analytics";
+import Collections from "./_components/collections";
 
-const DashboardPage = async() => {
-
+const Dashboard = async () => {
   const collections = await getCollections();
-  const entiresData = await getJournalEntries();
+  const entriesData = await getJournalEntries();
 
-  const entriesByCollection = entiresData?.data.entries.reduce((acc, entry) => {
-    const collectionId = entry.collection || "uncategorized";
-    if (!acc[collectionId]) {
-      acc[collectionId] = [];
-    }
-    acc[collectionId].push(entry);
-    return acc;
-  },{});
+  // Group entries by collection
+  const entriesByCollection = entriesData?.data?.entries?.reduce(
+    (acc, entry) => {
+      const collectionId = entry.collectionId || "unorganized";
+      if (!acc[collectionId]) {
+        acc[collectionId] = [];
+      }
+      acc[collectionId].push(entry);
+      return acc;
+    },
+    {}
+  );
+
   return (
-    <div className='px-4 py-8 space-y-8'>
-      <section className='space-y-4'>
-        Mood Graph
+    <div className="px-4 py-8 space-y-8">
+      {/* Analytics Section */}
+      <section className="space-y-4">
+        <MoodAnalytics />
       </section>
 
       <Collections
         collections={collections}
         entriesByCollection={entriesByCollection}
       />
-
     </div>
-  )
-}
+  );
+};
 
-export default DashboardPage
+export default Dashboard;
